@@ -78,11 +78,19 @@
 (defn root-node []
   (. (session) getRootNode))
 
-(defn node-at [abs-path]
-  (. (session) getNode abs-path))
+(defn node-at
+  ([abs-path] (. (session) getNode abs-path))
+  ([node rel-path] (. node getNode rel-path)))
 
-(defn property-at [abs-path]
-  (. (session) getProperty abs-path))
+(defn property-at
+  ([abs-path] (. (session) getProperty abs-path))
+  ([node rel-path] (. node getProperty rel-path)))
+
+(defn parent [item]
+  (. item getParent))
+
+(defn properties [node]
+  (iterator-seq (. node getProperties)))
 
 (defn children [node]
   (iterator-seq (. node getNodes)))
