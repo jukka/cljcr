@@ -14,13 +14,10 @@
 
 (defproject cljcr
   "1.0.0-SNAPSHOT"
-  :description "cljcr is a Clojure library for accessing the JSR-283 Java Content Repository API in an idiomatic, functional way." 
-  :dependencies [[org.clojure/clojure "1.1.0"] 
-		 [org.clojure/clojure-contrib "1.0-SNAPSHOT"]
-		 [javax.jcr/jcr "2.0"]
-		 ;; TODO: refactor out jackrabbit-specific stuff for
-		 ;; testing purposes only, rather than being a direct
-		 ;; dependency
-		 [org.apache.jackrabbit/jackrabbit-core "2.0.0"]
-		 [org.slf4j/slf4j-log4j12 "1.5.8"]]
-  :dev-dependencies [[leiningen/lein-swank "1.1.0"]])
+  :description "cljcr is a Clojure library for accessing the JSR-283 Java Content Repository API in an idiomatic, functional way."
+  :dependencies     [[org.clojure/clojure "1.1.0"]
+                     [org.clojure/clojure-contrib "1.0-SNAPSHOT"]
+                     [javax.jcr/jcr "2.0"]]
+  :dev-dependencies [[leiningen/lein-swank "1.1.0"]
+                     [org.apache.jackrabbit/jackrabbit-core "2.0.0"]
+                     [org.slf4j/slf4j-log4j12 "1.5.8"]])
