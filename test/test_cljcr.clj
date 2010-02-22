@@ -26,6 +26,14 @@
       (is (not (node? (first (iterator-seq (. (root-node) getProperties)))))
           "property a node?"))))
 
+(deftest test-property?
+  (with-repository jackrabbit-repo
+    (with-guest-session
+      (is (property? (. (root-node) getProperty "jcr:primaryType"))
+          "/jcr:primaryType property a property?")
+      (is (not (property? (root-node)))
+          "node a property?"))))
+
 (deftest test-node-at
   (with-repository jackrabbit-repo
     (with-guest-session

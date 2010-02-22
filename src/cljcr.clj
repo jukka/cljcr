@@ -73,7 +73,7 @@
   (instance? javax.jcr.Node x))
 
 (defn property? [x]
-  (instance? javax.jcr.Property))
+  (instance? javax.jcr.Property x))
 
 (defn root-node []
   (. (session) getRootNode))
