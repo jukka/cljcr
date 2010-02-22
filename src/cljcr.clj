@@ -104,19 +104,3 @@
 			 javax.jcr.Repository/REP_VERSION_DESC)]
       (println (format "Name: %s\nVendor: %s\nVersion: %s"
 		       rep-name rep-vendor rep-version)))))
-
-;; TODO better property access
-(deftest test-node?
-  (with-repository jackrabbit-repo
-    (with-guest-session
-      (is (node? (root-node)) 
-	  "root node a node?")
-      (is (not (node? (first (iterator-seq (. (root-node) getProperties)))))
-	  "property a node?"))))
-
-(deftest test-node-at
-  (with-repository jackrabbit-repo
-    (with-guest-session
-      (let [path "/jcr:system"]
-	(is (= (. (node-at path) getPath) path)
-	    "the path of (node-at \"/jcr:system\") /jcr:system?")))))
