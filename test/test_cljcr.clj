@@ -23,13 +23,13 @@
     (with-guest-session
       (is (node? (root-node))
           "root node a node?")
-      (is (not (node? (first (iterator-seq (. (root-node) getProperties)))))
+      (is (not (node? (property-at "/jcr:primaryType")))
           "property a node?"))))
 
 (deftest test-property?
   (with-repository jackrabbit-repo
     (with-guest-session
-      (is (property? (. (root-node) getProperty "jcr:primaryType"))
+      (is (property? (property-at "/jcr:primaryType"))
           "/jcr:primaryType property a property?")
       (is (not (property? (root-node)))
           "node a property?"))))
@@ -40,3 +40,10 @@
       (let [path "/jcr:system"]
         (is (= (. (node-at path) getPath) path)
             "the path of (node-at \"/jcr:system\") /jcr:system?")))))
+
+(deftest test-property-at
+  (with-repository jackrabbit-repo
+    (with-guest-session
+      (let [path "/jcr:primaryType"]
+        (is (= (. (property-at path) getPath) path)
+            "the path of (property-at \"/jcr:primaryType\") /jcr:primaryType?")))))

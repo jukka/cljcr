@@ -81,6 +81,9 @@
 (defn node-at [abs-path]
   (. (session) getNode abs-path))
 
+(defn property-at [abs-path]
+  (. (session) getProperty abs-path))
+
 (defn children [node]
   (iterator-seq (. node getNodes)))
 
