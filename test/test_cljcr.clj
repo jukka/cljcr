@@ -21,7 +21,7 @@
 (deftest test-node?
   (with-repository jackrabbit-repo
     (with-guest-session
-      (is (node? (root-node)) 
+      (is (node? (root-node))
           "root node a node?")
       (is (not (node? (first (iterator-seq (. (root-node) getProperties)))))
           "property a node?"))))
