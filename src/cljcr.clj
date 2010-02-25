@@ -109,24 +109,3 @@
 
 (defn children [node]
   (iterator-seq (. node getNodes)))
-
-(def jackrabbit-repo
-     {org.apache.jackrabbit.core.RepositoryFactoryImpl/REPOSITORY_HOME 
-      "repository/repository"
-      org.apache.jackrabbit.core.RepositoryFactoryImpl/REPOSITORY_CONF
-      "repository/repository.xml"})
-
-;; Examples of using the API so far
-
-;; TODO better way to access descriptors. Perhaps bind a map along
-;; with *repo* containing the descriptors as Clojure keys?
-(defn print-jackrabbit-info []
-  (with-repository jackrabbit-repo
-    (let [rep-name (. (repository) getDescriptor
-		      javax.jcr.Repository/REP_NAME_DESC)
-	  rep-vendor (. (repository) getDescriptor
-			javax.jcr.Repository/REP_VENDOR_DESC)
-	  rep-version (. (repository) getDescriptor
-			 javax.jcr.Repository/REP_VERSION_DESC)]
-      (println (format "Name: %s\nVendor: %s\nVersion: %s"
-		       rep-name rep-vendor rep-version)))))

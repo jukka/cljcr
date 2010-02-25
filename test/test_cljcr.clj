@@ -17,38 +17,49 @@
   (:use [clojure.test]
         [cljcr]))
 
-(deftest test-has-changes?
+(def jackrabbit-repo
+     {org.apache.jackrabbit.core.RepositoryFactoryImpl/REPOSITORY_HOME 
+      "repository/repository"
+      org.apache.jackrabbit.core.RepositoryFactoryImpl/REPOSITORY_CONF
+      "repository/repository.xml"})
+
+;; Examples of using the API so far
+
+;; TODO better way to access descriptors. Perhaps bind a map along
+;; with *repo* containing the descriptors as Clojure keys?
+(defn print-jackrabbit-info []
   (with-repository jackrabbit-repo
-    (with-guest-session
-      (is (not (has-changes?))
-          "there should be no unsaved changes"))))
+    (let [rep-name (. (repository) getDescriptor javax.jcr.Repository/REP_NAME_DESC)
+          rep-vendor (. (repository) getDescriptor javax.jcr.Repository/REP_VENDOR_DESC)
+          rep-version (. (repository) getDescriptor javax.jcr.Repository/REP_VERSION_DESC)]
+      (println (format "Name: %s\nVendor: %s\nVersion: %s"
+                        rep-name rep-vendor rep-version)))))
+
+(use-fixtures
+  :once
+  (fn [test] (with-repository jackrabbit-repo (with-guest-session (test)))))
+
+(deftest test-has-changes?
+  (is (not (has-changes?)) "there should be no unsaved changes"))
 
 (deftest test-node?
-  (with-repository jackrabbit-repo
-    (with-guest-session
-      (is (node? (root-node))
-          "root node a node?")
-      (is (not (node? (property-at "/jcr:primaryType")))
-          "property a node?"))))
+  (testing "node?"
+    (is (node? (root-node)) "a node")
+    (is (not (node? (property-at "/jcr:primaryType"))) "a property")))
 
 (deftest test-property?
-  (with-repository jackrabbit-repo
-    (with-guest-session
-      (is (property? (property-at "/jcr:primaryType"))
-          "/jcr:primaryType property a property?")
-      (is (not (property? (root-node)))
-          "node a property?"))))
+  (testing "property"
+    (is (property? (property-at "/jcr:primaryType")) "a property")
+    (is (not (property? (root-node))) "a node")))
 
 (deftest test-node-at
-  (with-repository jackrabbit-repo
-    (with-guest-session
-      (let [path "/jcr:system"]
-        (is (= (. (node-at path) getPath) path)
-            "the path of (node-at \"/jcr:system\") /jcr:system?")))))
+  (testing "node-at"
+    (let [path "/jcr:system"]
+      (is (= (. (node-at path) getPath) path)
+          "the path of (node-at \"/jcr:system\") /jcr:system?")))
 
 (deftest test-property-at
-  (with-repository jackrabbit-repo
-    (with-guest-session
-      (let [path "/jcr:primaryType"]
-        (is (= (. (property-at path) getPath) path)
-            "the path of (property-at \"/jcr:primaryType\") /jcr:primaryType?")))))
+  (testing "property-at"
+    (let [path "/jcr:primaryType"]
+      (is (= (. (property-at path) getPath) path)
+          "the path of (property-at \"/jcr:primaryType\") /jcr:primaryType?")))
