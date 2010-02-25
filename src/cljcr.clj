@@ -1,4 +1,5 @@
 ;;    Copyright 2010 Adam C. Foltzer
+;;    Copyright 2010 Jukka Zitting
 ;;
 ;;    Licensed under the Apache License, Version 2.0 (the "License");
 ;;    you may not use this file except in compliance with the License.
@@ -27,8 +28,7 @@
   (or *session* (throwf "No session active")))
 
 (defn repository-factory []
-  (first (java.util.ServiceLoader/load
-	  javax.jcr.RepositoryFactory)))
+  (first (java.util.ServiceLoader/load javax.jcr.RepositoryFactory)))
 
 (defn get-repository [param-map]
   (if-let [factory (repository-factory)]
@@ -68,6 +68,21 @@
 
 (defmacro with-guest-session [& body]
   `(with-session {} ~@body))
+
+(defn has-changes?
+  #^{ :doc "Checks whether the current session has unsaved changes." }
+  []
+  (. (session) hasPendingChanges))
+
+(defn save
+  #^{ :doc "Saves the changes in the current session." }
+  []
+  (. (session) save))
+
+(defn refresh
+  #^{ :doc "Refreshes the current session." }
+  []
+  (. (session) refresh true))
 
 (defn node? [x]
   (instance? javax.jcr.Node x))

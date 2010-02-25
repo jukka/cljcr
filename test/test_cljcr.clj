@@ -17,7 +17,12 @@
   (:use [clojure.test]
         [cljcr]))
 
-;; TODO better property access
+(deftest test-has-changes?
+  (with-repository jackrabbit-repo
+    (with-guest-session
+      (is (not (has-changes?))
+          "there should be no unsaved changes"))))
+
 (deftest test-node?
   (with-repository jackrabbit-repo
     (with-guest-session
