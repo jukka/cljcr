@@ -58,14 +58,31 @@
      {(var *repo*) (get-repository ~repo-params)}
      ~@body))
 
+(defn value
+  #^{ :doc "Converts a JCR Value instance to a Clojure value" }
+  [value]
+  (condp = (. value getType)
+    javax.jcr.PropertyType/STRING        (. value getString)
+    javax.jcr.PropertyType/DATE          (. value getDate)
+    javax.jcr.PropertyType/BINARY        (. value getBinary)
+    javax.jcr.PropertyType/DOUBLE        (. value getDouble)
+    javax.jcr.PropertyType/DECIMAL       (. value getDecimal)
+    javax.jcr.PropertyType/LONG          (. value getLong)
+    javax.jcr.PropertyType/BOOLEAN       (. value getBoolean)
+    javax.jcr.PropertyType/NAME          (. value getString)
+    javax.jcr.PropertyType/PATH          (. value getString)
+    javax.jcr.PropertyType/REFERENCE     (. value getString)
+    javax.jcr.PropertyType/WEAKREFERENCE (. value getString)
+    javax.jcr.PropertyType/URI           (. value getString)))
+
 (defn descriptor
   #^{ :doc "Returns the string value(s) of a repository descriptor." }
   ([key]
     (descriptor (repository) key))
   ([repository key]
     (if (. repository isSingleValueDescriptor key)
-      (. (. repository getDescriptorValue key) getString)
-      (map #(. %1 getString) (. repository getDescriptorValues key)))))
+      (value (. repository getDescriptorValue key))
+      (map value (. repository getDescriptorValues key)))))
 
 (defn descriptors
   #^{ :doc "Returns a map of the repository descriptors." }
