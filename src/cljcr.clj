@@ -58,6 +58,22 @@
      {(var *repo*) (get-repository ~repo-params)}
      ~@body))
 
+(defn descriptor
+  #^{ :doc "Returns the string value(s) of a repository descriptor." }
+  ([key]
+    (descriptor (repository) key))
+  ([repository key]
+    (if (. repository isSingleValueDescriptor key)
+      (. (. repository getDescriptorValue key) getString)
+      (map #(. %1 getString) (. repository getDescriptorValues key)))))
+
+(defn descriptors
+  #^{ :doc "Returns a map of the repository descriptors." }
+  ([] (descriptors (repository)))
+  ([repository]
+    (let [keys (. repository getDescriptorKeys)]
+      (reduce #(assoc %1 %2 (descriptor repository %2)) {} keys))))
+
 (defmacro with-session
   [session-params & body]
   `(with-bindings 

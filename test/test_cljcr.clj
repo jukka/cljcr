@@ -39,6 +39,10 @@
   :once
   (fn [test] (with-repository jackrabbit-repo (with-guest-session (test)))))
 
+(deftest test-descriptors
+  (testing "descriptors"
+    (is (= (get (descriptors) "jcr.repository.name") "Jackrabbit"))))
+
 (deftest test-has-changes?
   (is (not (has-changes?)) "there should be no unsaved changes"))
 
@@ -56,10 +60,10 @@
   (testing "node-at"
     (let [path "/jcr:system"]
       (is (= (. (node-at path) getPath) path)
-          "the path of (node-at \"/jcr:system\") /jcr:system?")))
+          "the path of (node-at \"/jcr:system\") /jcr:system?"))))
 
 (deftest test-property-at
   (testing "property-at"
     (let [path "/jcr:primaryType"]
       (is (= (. (property-at path) getPath) path)
-          "the path of (property-at \"/jcr:primaryType\") /jcr:primaryType?")))
+          "the path of (property-at \"/jcr:primaryType\") /jcr:primaryType?"))))
