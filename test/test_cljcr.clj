@@ -37,7 +37,10 @@
 
 (use-fixtures
   :once
-  (fn [test] (with-repository jackrabbit-repo (with-guest-session (test)))))
+  (fn [test] 
+    (with-repository jackrabbit-repo 
+      (with-session {:username "username" :password "password"} 
+	(test)))))
 
 (deftest test-descriptors
   (testing "descriptors"
@@ -67,3 +70,11 @@
     (let [path "/jcr:primaryType"]
       (is (= (. (property-at path) getPath) path)
           "the path of (property-at \"/jcr:primaryType\") /jcr:primaryType?"))))
+
+(deftest test-set-properties
+  (testing "set-properties"
+    (let [test-node (add-node (root-node) "testNode")]
+      (set-properties test-node {"testProp" 5.0})
+      (let [test-prop (property-at "/testNode/testProp")]
+	(is (property? test-prop) "a property")
+	(is (= (value (. test-prop getValue)) 5.0))))))

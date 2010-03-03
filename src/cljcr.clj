@@ -38,7 +38,7 @@
     (throwf "Could not load RepositoryFactory implementation")))
 
 (defn credentials
-  [{user :user pass :password}] 
+  [{user :username pass :password}] 
   (if user
     (let [pass (if pass (char-array pass))]
       (javax.jcr.SimpleCredentials. user pass))
@@ -46,8 +46,8 @@
 
 (defn get-session
   ([] (get-session {}))
-  ([{user :user pass :password ws :workspace}]
-     (let [creds (credentials {:user user :password pass})]
+  ([{user :username pass :password ws :workspace}]
+     (let [creds (credentials {:username user :password pass})]
        (if ws
 	 (. (repository) login creds ws)
 	 (. (repository) login creds)))))
@@ -92,10 +92,13 @@
       (reduce #(assoc %1 %2 (descriptor repository %2)) {} keys))))
 
 (defmacro with-session
+  #^{ :doc "Executes body with a new session from the active repository. Param map supports keys :username, :password, :workspace, and :save-changes" }
   [session-params & body]
   `(with-bindings 
      {(var *session*) (get-session ~session-params)}
      (let [v# (do ~@body)]
+       (if (~session-params :save-changes)
+	 (save))
        (. (session) logout)
        v#)))
 
@@ -142,3 +145,21 @@
 
 (defn children [node]
   (iterator-seq (. node getNodes)))
+
+(defn add-node
+  #^{ :doc "Adds a new child node with the specified name as a child of the specified parent node, optionally with a primary node type" }
+  ([parent name]
+     (. parent addNode name))
+  ([parent name nodetype]
+     (. parent addNode name nodetype)))
+
+;; TODO: so far, this only supports explicitly-cast values, or ones
+;; that can be coerced into matching a method signature of a
+;; setProperty method. It would be nice to extend Jukka's work on
+;; mapping JCR Values to Clojure types by also generating constructors
+;; both for single Values and Value arrays.
+(defn set-properties
+  #^{ :doc "Sets properties on a node based on a string-value map" }
+  [parent property-map]
+  (doseq [[name value] property-map]
+    (. parent setProperty name value)))
